@@ -4,7 +4,7 @@ $(document).ready(function() {
 	jQuery.event.props.push('dataTransfer');
 	
 	// Максимальное количество загружаемых изображений за одни раз
-	var maxFiles = 6;
+	var maxFiles = 10;
 	
 	// Оповещение по умолчанию
 	var errMessage = 0;
@@ -184,7 +184,7 @@ $(document).ready(function() {
 		// Для каждого файла
 		$.each(dataArray, function(index, file) {                    
 			// загружаем страницу и передаем значения, используя HTTP POST запрос 
-			$.post(btUploadUrl, dataArray[index], function(data) {
+			$.post('', dataArray[index], function(data) {
 			
 				var fileName = dataArray[index].name;
 				++x;
@@ -198,6 +198,8 @@ $(document).ready(function() {
 					
 					// Вызываем функцию удаления всех изображений после задержки 1 секунда
 					setTimeout(restartFiles, 1000);
+                                        //обновляем картинки
+                                        $('#file-name-holder').html($(data).find('#file-name-holder').html());
 				// если еще продолжается загрузка	
 				} else if(totalPercent*(x) < 100) {
 					// Какой файл загружается
@@ -206,18 +208,12 @@ $(document).ready(function() {
 				
 				// Формируем в виде списка все загруженные изображения
 				// data формируется в upload.php
-				var dataSplit = data.split(':');
-				if(dataSplit[1] == 'загружен успешно') {
-					$('#uploaded-files').append('<li><a href="images/'+dataSplit[0]+'">'+fileName+'</a> загружен успешно</li>');
-								
-				} else {
-					$('#uploaded-files').append('<li><a href="images/'+data+'. Имя файла: '+dataArray[index].name+'</li>');
-				}
+                                  
 				
 			});
 		});
 		// Показываем список загруженных файлов
-		$('#uploaded-files').show();
+		//$('#uploaded-files').show();
 		return false;
 	});
 	

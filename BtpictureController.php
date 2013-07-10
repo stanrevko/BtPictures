@@ -3,10 +3,11 @@
 class BtpictureController extends Controller {
 
     public $pictures_dir = '/images/btpictures';
-
+    public $layout='//layouts/column2';
+    public $assets;
     public function filters() {
         return array(
-            'postOnly + delete', // we only allow deletion via POST request
+        //    'postOnly + delete', // we only allow deletion via POST request
         );
     }
 
@@ -25,9 +26,7 @@ class BtpictureController extends Controller {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-        ));
+        $this->actionUpdate($id);
     }
 
     /**
@@ -58,7 +57,12 @@ class BtpictureController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
+         $cs = Yii::app()->clientScript;
 
+        //$cs->registerCssFile('http://blueimp.github.io/cdn/css/bootstrap.min.css');
+        $cs->registerCoreScript('jquery');        
+   $this->assets = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . '/assets');
+   Yii::app()->clientScript->registerScriptFile($this->assets . '/jquery.Jcrop.min.js');
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -88,19 +92,20 @@ class BtpictureController extends Controller {
 
     /**
      * Lists all models.
-     */
+   
     public function actionIndex() {
 
         $dataProvider = new CActiveDataProvider('Btpicture');
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
-    }
+    }  */
 
     /**
      * Manages all models.
      */
-    public function actionAdmin() {
+    
+    public function actionIndex() {
         $model = new Btpicture('search');
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Btpicture']))
@@ -134,17 +139,6 @@ class BtpictureController extends Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
-    }
-
-    ///загружает оригинальную картинку в папку origin
-    public function actionUpload() {
-        $bt = new Btpicture;
-        // Вытаскиваем необходимые данные
-        $file = $_POST['value'];
-        $name = $_POST['name']; ///base64 encoded file of image
-
-        $bt->uploadOrigin($file, $name);
-        $bt->createCopies();
     }
 
 }

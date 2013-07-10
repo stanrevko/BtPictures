@@ -10,3 +10,4 @@ Yii::setPathOfAlias('btpicture', dirname(__FILE__) . DS . '..'. DS . '..'.DS.'im
 
 
 Задача, переробити визначення типу файла
+папка для 
