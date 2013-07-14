@@ -1,4 +1,4 @@
-<?php
+[<?php
 
 /**
  * This is the model class for table "btpicture".  Work with files
@@ -21,11 +21,12 @@
 class Btpicture extends CActiveRecord {
 
     public $originFile;  // contains base64_encoded data of image file;
-  //  public $owner; // for search
-    public function getOwner(){
-       return  "$this->owner_name-$this->owner_id";
+    public $owner; // for search
+
+    public function getOwnerFull() {
+        return $this->owner_name . "_" . $this->owner_id;
     }
-    
+
     public static function model($className = __CLASS__) {
         return parent::model($className);
     }
@@ -35,9 +36,12 @@ class Btpicture extends CActiveRecord {
         $confArr = array(
             'dir' => Yii::getPathOfAlias('btpicture'),
             'sizes' => array(
-                'size1' => array('width' => '1000', 'aspectRatio' => '1:1', 'height' => '1000'), ///if is set aspectRatio btImage don't use height; aspectRatio mast be like "1:1"
-                'size2' => array('width' => '425', 'aspectRatio' => '1:1', 'height' => false),
-                'size3' => array('width' => '82', 'aspectRatio' => '1:1', 'height' => false),
+                /* croped the largest */
+                'c' => array('task' => 'crop', 'target' => 'original', 'width' => '1000', 'height' => false), ///if is set aspectRatio btImage don't use height; aspectRatio mast be like "1:1"
+                /* resized form c, trumbnail1 */
+                't1' => array('task' => 'resize', 'target' => 'c', 'width' => '425', 'height' => false),
+                /* resized form c, trumbnail2 */
+                't2' => array('task' => 'resize', 'target' => 'c', 'width' => '82', 'height' => false),
             ),
         );
         if ($key === null)
@@ -110,7 +114,9 @@ class Btpicture extends CActiveRecord {
     }
 
     ///get path of image converted to size$number
-    public function getFileLink($sizeName) {
+    public function getFileLink($sizeName = null) {
+        if ($sizeName === null)
+            $sizeName = 'original';
         return $this->getDir($sizeName) . $this->getFilename();
     }
 
@@ -142,6 +148,21 @@ class Btpicture extends CActiveRecord {
      */
     public function tableName() {
         return 'btpicture';
+    }
+
+    ///set is_main = false for all pictures of current gallery,
+    //main picture must be only one
+    protected function resolveMainConflict() {
+        $tableName = $this->tableName();
+        ///set others pictures in gallery as not main 
+        $sql = "UPDATE $tableName SET is_main = 0 WHERE owner_name = '$this->owner_name' AND owner_id = '$this->owner_id'";
+        return Yii::app()->db->createCommand($sql)->execute();
+    }
+    
+    public function saveAsMain(){
+        $this->resolveMainConflict();
+        $this->is_main = 1;
+        $this->save();
     }
 
     /**
@@ -202,10 +223,18 @@ class Btpicture extends CActiveRecord {
         // should not be searched.
 
         $criteria = new CDbCriteria;
-
-        $criteria->compare('owner_name', $this->owner_name, true);
-        $criteria->compare('owner_id', $this->owner_id);
-        $criteria->compare('owner', $this->owner);
+        $owner_name = $this->owner_name;
+        $owner_id = $this->owner_id;
+        if (preg_match('/^([A-Za-z]+)/', $this->owner, $res)) {
+            $owner_name = $res[1];
+        }
+        if (preg_match('/(\d+)$/', $this->owner, $res)) {
+            $owner_id = $res[1];
+        }
+        var_dump($res);
+        $criteria->compare('owner_name', $owner_name, true);
+        $criteria->compare('owner_id', $owner_id);
+        // $criteria->compare('CONCAT(owner_name, \'_\', owner_id )',$this->owner,true);
         $criteria->compare('id', $this->id);
         $criteria->compare('user_id', $this->user_id);
         $criteria->compare('file_name', $this->file_name, true);
@@ -229,6 +258,10 @@ class Btpicture extends CActiveRecord {
         if (parent::beforeSave()) {
             $this->user_id = Yii::app()->user->id;
             $this->updated = date("Y-m-d H:i:s");
+            ///if we are saving main picture of gallery, we must set others as unmain
+            if ((int) $this->is_main === 1) {
+                $this->resolveMainConflict();
+            }
             if ($this->isNewRecord)
                 $this->created = date("Y-m-d H:i:s");
             return true;

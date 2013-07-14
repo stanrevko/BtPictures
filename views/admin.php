@@ -42,22 +42,26 @@ $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'btpicture-grid',
     'dataProvider' => $model->search(),
     'filter' => $model,
-    'columns' => array(
 
+    'columns' => array(
+        array(
+            'name' => 'originFile',
+            'type' => 'html',
+            'filter' => false,
+            'value'=>'CHtml::image($data->url,"",array("style"=>"max-width:50px;height:50px;"))',
+        ),
         array(
             'name' => 'owner',
-            'header' => 'Главная',
-            'value' => '$data->owner_name . $data->owner_id '
+            'value' => 'ucwords($data->owner_name.\'_\'.$data->owner_id)',
         ),
-        
         'id',
         'user_id',
-        'filename',
+        'file_name',
         //'file_ext',
 
         'alt',
-      //  'title',
-         array(
+        //  'title',
+        array(
             'name' => 'is_main',
             'header' => 'Главная',
             'filter' => array('1' => 'Да', '0' => 'Нет'),

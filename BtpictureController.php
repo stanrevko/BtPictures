@@ -76,6 +76,13 @@ class BtpictureController extends Controller {
             'model' => $model,
         ));
     }
+    
+    public function actionSetMain($id){   
+         $this->loadModel($id)->saveAsMain();
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax']))
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index')); 
+    }
 
     /**
      * Deletes a particular model.
@@ -87,7 +94,7 @@ class BtpictureController extends Controller {
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
 
     /**
@@ -108,9 +115,12 @@ class BtpictureController extends Controller {
     public function actionIndex() {
         $model = new Btpicture('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Btpicture']))
+        if (isset($_GET['Btpicture'])){
             $model->attributes = $_GET['Btpicture'];
-
+            $model->owner =  $_GET['Btpicture']['owner'];
+            }
+      //  var_dump($model->attributes);
+         $model->owner;
         $this->render('admin', array(
             'model' => $model,
         ));
