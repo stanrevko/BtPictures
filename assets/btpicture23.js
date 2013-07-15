@@ -94,7 +94,7 @@ $(document).ready(function() {
 					
 					return function(e) {
 						// Помещаем URI изображения в массив
-						dataArray.push({name : file.name, value : this.result});
+						dataArray.push({action: 'upload',name : file.name, value : this.result});
 						addImage((dataArray.length-1));
 					}; 
 						

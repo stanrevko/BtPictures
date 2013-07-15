@@ -1,12 +1,12 @@
-BtPictures
+****BtPictures****
 ==========
 
 yii extension for conection images to any yii model
-Опис:
+# Опис:
 Основна суть розширення заключається у можливості для екземпляра любого класу (де є поле id), можна створити
 галерею тобто групу картинок, до яких можна буде доступитися, тільки використвоючи екземпляр цього класу.
 
-Поняття:
+## Поняття:
 Галерея - сукупність усіх картинок, яким відповідають записи в бд з однаковими owner_name и owner_id
         Також може називатися екземпляр любого класу класу(повинна бути поле id), що передається у віджет в якості параметра model
 Аватар - головна картинка певної галереї. Визначається присвоєнням полю is_main = 1 для конкретного запису.
@@ -20,9 +20,9 @@ BtPictureWidget      - віджет. Слугує для загрузки кар
 BtPictureBehavior    - Behavior(Поведінка для моделей). Слугую для добавлення в модель функцію getPictures(), 
                        що повертає евземпляри класу Btpicture для кожної картинки, що відноситься до цієї галереї 
 
-INSTALL
+# INSTALL
 
-Загальні 
+## Загальні 
 Yii::setPathOfAlias('btpicture', dirname(__FILE__) . DS . '..'. DS . '..'.DS.'images'.DS.'btpicture');
 
 Всі налаштування можна прописати у методі getConfig() моделі model/Btpicture.php 
@@ -39,13 +39,13 @@ Yii::setPathOfAlias('btpicture', dirname(__FILE__) . DS . '..'. DS . '..'.DS.'im
             ),
         );
 
-Контроллер
+## Контроллер
   у файлі конфігурації
   'controllerMap' => array(
         'btpicture' => 'core.extensions.btpicture.BtpictureController',
     ),
 
-Віджет
+## Віджет
 $this->widget('core.extensions.btpicture.BtPictureWidget', array(
     'model' => $model,
     'controllerRoute' => 'gallery', //route to gallery controller
@@ -54,3 +54,4 @@ $this->widget('core.extensions.btpicture.BtPictureWidget', array(
 
 
 
+Welcome to the BtPictures wiki!
