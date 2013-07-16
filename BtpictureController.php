@@ -3,11 +3,12 @@
 class BtpictureController extends Controller {
 
     public $pictures_dir = '/images/btpictures';
-    public $layout='//layouts/column2';
+    public $layout = '//layouts/column2';
     public $assets;
+
     public function filters() {
         return array(
-        //    'postOnly + delete', // we only allow deletion via POST request
+                //    'postOnly + delete', // we only allow deletion via POST request
         );
     }
 
@@ -57,12 +58,12 @@ class BtpictureController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
-         $cs = Yii::app()->clientScript;
+        $cs = Yii::app()->clientScript;
 
         //$cs->registerCssFile('http://blueimp.github.io/cdn/css/bootstrap.min.css');
-        $cs->registerCoreScript('jquery');        
-   $this->assets = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . '/assets');
-   Yii::app()->clientScript->registerScriptFile($this->assets . '/jquery.Jcrop.min.js');
+        $cs->registerCoreScript('jquery');
+        $this->assets = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . '/assets');
+        Yii::app()->clientScript->registerScriptFile($this->assets . '/jquery.Jcrop.min.js');
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -76,12 +77,12 @@ class BtpictureController extends Controller {
             'model' => $model,
         ));
     }
-    
-    public function actionSetMain($id){   
-         $this->loadModel($id)->saveAsMain();
+
+    public function actionSetMain($id) {
+        $this->loadModel($id)->saveAsMain();
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index')); 
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
 
     /**
@@ -99,28 +100,27 @@ class BtpictureController extends Controller {
 
     /**
      * Lists all models.
-   
-    public function actionIndex() {
 
-        $dataProvider = new CActiveDataProvider('Btpicture');
-        $this->render('index', array(
-            'dataProvider' => $dataProvider,
-        ));
-    }  */
+      public function actionIndex() {
+
+      $dataProvider = new CActiveDataProvider('Btpicture');
+      $this->render('index', array(
+      'dataProvider' => $dataProvider,
+      ));
+      } */
 
     /**
      * Manages all models.
      */
-    
     public function actionIndex() {
         $model = new Btpicture('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Btpicture'])){
+        if (isset($_GET['Btpicture'])) {
             $model->attributes = $_GET['Btpicture'];
-            $model->owner =  $_GET['Btpicture']['owner'];
-            }
-      //  var_dump($model->attributes);
-         $model->owner;
+            $model->owner = $_GET['Btpicture']['owner'];
+        }
+        //  var_dump($model->attributes);
+        $model->owner;
         $this->render('admin', array(
             'model' => $model,
         ));
@@ -152,4 +152,4 @@ class BtpictureController extends Controller {
     }
 
 }
- 
+

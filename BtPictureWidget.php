@@ -40,38 +40,48 @@ class BtPictureWidget extends CWidget {
         return $bt;
     }
 
+    protected function actionUpdate($id) {
+        $model = $this->loadModel($id);
+
+        if (isset($_POST['Btpicture'])) {
+            $model->attributes = $_POST['Btpicture'];
+            if ($model->save())
+           //     echo '1';
+              exit();
+        }
+
+        $this->render('widgetUpdate', array(
+            'model' => $model,
+        ));
+       exit(); // что б не отображалось всё остальное
+    }
+
     /** Render widget */
     public function run() {
         ///for ajax actions
-        if(isset($_REQUEST['edit'])){
-          $picture = $this->loadModel($_REQUEST['id']);                    
-                    $this->render("_form",array('model'=>$picture));
-                    exit();
-                    }
+
         if (isset($_POST['action'])) {
             switch ($_POST['action']) {
-                case 'edit':
-                    $picture = $this->loadModel($_POST['id']);
-                    
-                    $this->render("update");
-                    break;
-                case 'delete':
-                    $picture = $this->loadModel($_POST['id']);
-                    $picture->delete();
-                    break;
-                case 'setMain':
-                    $picture = $this->loadModel($_POST['id']);
-                    $picture->setAsMain();
-                    break;
-
                 case 'upload':
                     //если передаёться файл в посте
                     if (isset($_POST['value']) && !empty($_POST['value']))
                         $this->actionUpload($_POST['value'], $_POST['name']);
+                    break;                    
+                case 'update':
+                    $this->actionUpdate($_POST['id']);
+                     exit();
+                    break;                
+                case 'delete':
+                    $picture = $this->loadModel($_POST['id']);
+                    $picture->delete();
+                     exit();
                     break;
-                    break; /// two break need because we need show, but we have exit()
-                    exit();
-            }
+                case 'setMain':
+                    $picture = $this->loadModel($_POST['id']);
+                    $picture->saveAsMain();
+                     exit();
+                    break;                                   
+            }            
         }
 
         // include css and js files
@@ -88,8 +98,13 @@ class BtPictureWidget extends CWidget {
 
         $cs->registerCoreScript('jquery');
         $cs->registerCoreScript('jquery.ui');
-        $cs->registerCssFile($this->assets . '/btpicture23.css');
-        $cs->registerScriptFile($this->assets . '/btpicture23.js');
+        
+        Yii::app()->clientScript->registerCssFile(
+                Yii::app()->clientScript->getCoreScriptUrl() .
+                '/jui/css/base/jquery-ui.css'
+        );
+        $cs->registerCssFile($this->assets . '/btpicture.css');
+        $cs->registerScriptFile($this->assets . '/btpicture.js');
         $cs->registerScriptFile($this->assets . '/jquery.Jcrop.min.js');
         $cs->registerScript('btUploadUrl', 'btUploadUrl = "' . Yii::app()->createUrl('btpicture/upload') . '"');
     }
